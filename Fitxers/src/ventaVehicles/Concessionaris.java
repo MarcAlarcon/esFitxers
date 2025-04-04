@@ -100,8 +100,10 @@ public class Concessionaris {
 								vehicles.add(new Motos(palabras[1], Integer.parseInt(palabras[2]),
 										Integer.parseInt(palabras[3])));
 							}
-						} catch (NumberFormatException | MatriculaInvalidaException e) {
+						} catch (MatriculaInvalidaException e) {
 							System.out.println(e.getMessage());
+						} catch (NumberFormatException e) {
+							System.out.println("Hay letras o numeros donde no hace falta: " + linea);
 						}
 					} else {
 						System.out.println("Es un comentario con #, no se añade");
@@ -115,5 +117,10 @@ public class Concessionaris {
 			System.out.println("El fitxer no existeix, no s'ha pogut llegir");
 			return false;
 		}
+	}
+
+	public String mostraVehicle(String vehic) {
+		System.out.println(vehicles);
+		return vehic;
 	}
 }

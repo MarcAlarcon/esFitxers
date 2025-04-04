@@ -5,6 +5,7 @@ public class Main {
 		try {
 			Concessionaris c = new Concessionaris("Caracola");
 			c.leerFichero("cotxe");
+			c.mostraVehicle("cotxe");
 		} catch (MatriculaInvalidaException e) {
 			System.out.println(e.getLocalizedMessage());
 			e.printStackTrace();
