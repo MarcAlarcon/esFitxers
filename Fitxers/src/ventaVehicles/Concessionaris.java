@@ -2,7 +2,6 @@ package ventaVehicles;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
@@ -11,20 +10,17 @@ import java.util.TreeSet;
 public class Concessionaris {
 
 	public void compDesc() {
-		Iterator<Vehicles> iter = vehicles.iterator();
-		while (iter.hasNext()) {
-			Vehicles v = iter.next();
+		for (Vehicles v : vehicles) {
 			System.out.println("El descompte es de: " + v.calcularDescompte() + "%");
 		}
 	}
 
 	public double calculMitj() {
 		double totalKm = 0;
-		Iterator<Vehicles> iter = vehicles.iterator();
-		while (iter.hasNext()) {
-			totalKm += iter.next().getKm();
+		for (Vehicles v : vehicles) {
+			totalKm += v.getKm();
 		}
-		return totalKm / vehicles.size();
+		return vehicles.isEmpty() ? 0 : totalKm / vehicles.size();
 	}
 
 	@Override
@@ -34,9 +30,9 @@ public class Concessionaris {
 
 	public static final int limitVehiclesConcesionarios = 10;
 	private String adreca;
-	private static TreeSet<Vehicles> vehicles;
+	private TreeSet<Vehicles> vehicles;
 
-	public static void sumaVehic(Vehicles vehicle) {
+	public void sumaVehic(Vehicles vehicle) {
 		if (vehicles.size() < limitVehiclesConcesionarios) {
 			vehicles.add(vehicle);
 		} else {
@@ -58,9 +54,9 @@ public class Concessionaris {
 		return null;
 	}
 
-	public Concessionaris(String adreca) throws MatriculaInvalidaException {
+	public Concessionaris(String adreca) {
 		this.adreca = adreca;
-		this.vehicles = new TreeSet<Vehicles>();
+		this.vehicles = new TreeSet<>();
 	}
 
 	public int totalVehic() {
@@ -87,53 +83,37 @@ public class Concessionaris {
 		return limitVehiclesConcesionarios;
 	}
 
-	public static void Main(String[] args) {
-
-	}
-
-	public static boolean leerFichero(String fichero) throws MatriculaInvalidaException {
+	public boolean leerFichero(String fichero) throws MatriculaInvalidaException {
 		File file = new File(fichero);
-		{
-			if (file.exists()) {
-				System.out.println("el fitxer existeix");
-				try (BufferedReader bReader = new BufferedReader(new FileReader(fichero))) {
-					String linea = "";
-					String[] palabras = linea.split("; ");
-					int total = 0;
-					Vehicles v;
-					while ((linea = bReader.readLine()) != null) {
+		if (file.exists()) {
+			System.out.println("El fitxer existeix");
+			try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
+				String linea;
+				while ((linea = bReader.readLine()) != null) {
+					if (!linea.startsWith("#")) {
+						String[] palabras = linea.split("; ");
 						try {
-							if (linea.startsWith("#")) {
-								System.out.println("Es un # asi que no se añade");
-								if (palabras[0].equals("cotxe")) {
-									vehicles.add(new Cotxes(palabras[1], Integer.parseInt(palabras[2]),
-											Boolean.parseBoolean(palabras[3])));
-								}
-								if (palabras[0].equals("cotxe")) {
-									vehicles.add(new Motos(palabras[1], Integer.parseInt(palabras[2]),
-											Integer.parseInt(palabras[3])));
-								}
-							} /*
-								 * else { palabras = linea.split("; "); for (int i = 0; i < palabras.length;
-								 * i++) { System.out.print(palabras[i] + " "); } System.out.println(""); }
-								 */
-
-						} catch (NumberFormatException e) {
-							System.out.println("");
-						} catch (MatriculaInvalidaException e) {
-							System.out.println();
+							if (palabras[0].equals("cotxe")) {
+								vehicles.add(new Cotxes(palabras[1], Integer.parseInt(palabras[2]),
+										Boolean.parseBoolean(palabras[3])));
+							} else if (palabras[0].equals("moto")) {
+								vehicles.add(new Motos(palabras[1], Integer.parseInt(palabras[2]),
+										Integer.parseInt(palabras[3])));
+							}
+						} catch (NumberFormatException | MatriculaInvalidaException e) {
+							System.out.println(e.getMessage());
 						}
+					} else {
+						System.out.println("Es un comentario con #, no se añade");
 					}
-				} catch (FileNotFoundException e) {
-					System.out.println("Fitxer no existeix");
-				} catch (IOException e) {
-					System.out.println(e.getMessage());
 				}
-				return true;
+			} catch (IOException e) {
+				System.out.println("Error leyendo el archivo: " + e.getMessage());
 			}
-			System.out.println("el fitxer NO existeix, no s'ha pogut llegir");
+			return true;
+		} else {
+			System.out.println("El fitxer no existeix, no s'ha pogut llegir");
 			return false;
 		}
 	}
-
 }

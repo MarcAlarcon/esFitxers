@@ -3,13 +3,11 @@ package ventaVehicles;
 public class Main {
 	public static void main(String[] args) {
 		try {
-
-			Concessionaris.leerFichero("cotxe");
-
-		} catch (MatriculaInvalidaException ex) {
-			System.out.println(ex.getLocalizedMessage());
-			ex.printStackTrace();
+			Concessionaris c = new Concessionaris("Caracola");
+			c.leerFichero("cotxe");
+		} catch (MatriculaInvalidaException e) {
+			System.out.println(e.getLocalizedMessage());
+			e.printStackTrace();
 		}
-
 	}
 }
